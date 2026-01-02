@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>N8N Webhook Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #f5f7fa;
+            color: #2d3748;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: #718096;
+            font-size: 1rem;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: #718096;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2563eb;
+        }
+
+        .data-grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .data-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .data-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .data-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .data-email {
+            font-weight: 600;
+            color: #1a202c;
+            font-size: 1.1rem;
+        }
+
+        .data-time {
+            font-size: 0.875rem;
+            color: #718096;
+        }
+
+        .data-summary {
+            margin-bottom: 1rem;
+            color: #4a5568;
+            line-height: 1.8;
+        }
+
+        .data-links {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .link-card {
+            background: #f7fafc;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .link-label {
+            font-size: 0.75rem;
+            color: #718096;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .link-url {
+            display: inline-block;
+            color: #2563eb;
+            text-decoration: none;
+            font-size: 0.9rem;
+            word-break: break-all;
+        }
+
+        .link-url:hover {
+            text-decoration: underline;
+        }
+
+        .delete-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        .delete-btn:hover {
+            background: #dc2626;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: white;
+            border-radius: 12px;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1a202c;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state-text {
+            color: #718096;
+        }
+
+        .refresh-btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            margin-top: 1.5rem;
+            transition: background 0.2s;
+        }
+
+        .refresh-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .send-form {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        textarea.form-input {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 1rem;
+            background: white;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: background 0.2s;
+            margin-left: 0.5rem;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+
+        .toggle-section {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .entry-separator {
+            border-top: 2px dashed #e2e8f0;
+            margin: 2rem 0;
+            padding-top: 2rem;
+        }
+
+        .entry-header {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2563eb;
+            margin-bottom: 1rem;
+        }
+
+        /* Tab Styles */
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .tab {
+            padding: 1rem 2rem;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #64748b;
+            transition: all 0.3s ease;
+        }
+
+        .tab:hover {
+            color: #2563eb;
+            background: #f1f5f9;
+        }
+
+        .tab.active {
+            color: #2563eb;
+            border-bottom-color: #2563eb;
+            background: #eff6ff;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h1>🚀 N8N Webhook Manager</h1>
+                    <p class="subtitle">Receive and manage webhook data in real-time</p>
+                </div>
+                <a href="/logout" style="text-decoration: none; background: #ef4444; color: white; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 500; transition: background 0.3s ease;">
+                    🚪 Logout
+                </a>
+            </div>
+        </header>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-label">Total Received</div>
+                <div class="stat-value">{{ total }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Status</div>
+                <div class="stat-value" style="font-size: 1.5rem;">
+                    <span class="badge">Active</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Actions</div>
+                <button class="refresh-btn" onclick="location.reload()">🔄 Refresh</button>
+            </div>
+        </div>
+
+        <!-- Tabs Navigation -->
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('received')">📥 Received Data</button>
+            <button class="tab" onclick="switchTab('send')">📤 Send Data</button>
+        </div>
+
+        <!-- Received Data Tab -->
+        <div id="receivedTab" class="tab-content active">
+
+        <div class="data-grid">
+            {% if data %}
+                {% for item in data %}
+                <div class="data-card">
+                    <div class="data-header">
+                        <div>
+                            <div class="data-email">👤 {{ item.name }}</div>
+                            <div class="data-email" style="font-size: 0.9rem; margin-top: 0.25rem;">📧 {{ item.email }}</div>
+                            <div class="data-time">{{ item.received_at }}</div>
+                        </div>
+                        <button class="delete-btn" onclick="deleteRecord({{ item.id }})">🗑️ Delete</button>
+                    </div>
+
+                    <div class="data-summary">
+                        <strong>Summary:</strong><br>
+                        {{ item.summary }}
+                    </div>
+
+                    <div class="data-links">
+                        <div class="link-card">
+                            <div class="link-label">Document 1</div>
+                            <a href="{{ item.document_link_1 }}" target="_blank" class="link-url">
+                                🔗 {{ item.document_link_1[:50] }}{% if item.document_link_1|length > 50 %}...{% endif %}
+                            </a>
+                        </div>
+                        <div class="link-card">
+                            <div class="link-label">Document 2</div>
+                            <a href="{{ item.document_link_2 }}" target="_blank" class="link-url">
+                                🔗 {{ item.document_link_2[:50] }}{% if item.document_link_2|length > 50 %}...{% endif %}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-state-icon">📭</div>
+                    <div class="empty-state-title">No Data Received Yet</div>
+                    <p class="empty-state-text">Waiting for incoming webhook data...</p>
+                    <p class="empty-state-text" style="margin-top: 1rem; font-family: monospace; background: #f7fafc; padding: 1rem; border-radius: 6px;">
+                        POST to: <strong>http://localhost:5000/api/receive</strong>
+                    </p>
+                </div>
+            {% endif %}
+        </div>
+        </div>
+
+        <!-- Send Data Tab -->
+        <div id="sendTab" class="tab-content">
+            <div class="send-form">
+                <h2 style="margin-bottom: 1.5rem;">📤 Send Data to N8N</h2>
+
+                <form id="sendDataForm" onsubmit="sendToN8N(event)">
+                    <div class="form-group">
+                        <label class="form-label">Mode</label>
+                        <select id="mode" class="form-select">
+                            <option value="test">Test Mode</option>
+                            <option value="prod">Production Mode</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">📄 Upload CSV (Optional)</label>
+                        <input type="file" id="csvFile" class="form-input" accept=".csv" onchange="handleCSVUpload(event)">
+                        <button type="button" class="btn-secondary" style="margin-top: 0.5rem;" onclick="downloadTemplate()">📥 Download CSV Template</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Number of Entries (Manual)</label>
+                        <input type="number" id="numEntries" class="form-input" min="1" max="10" value="1" onchange="updateEntryFields()">
+                    </div>
+
+                    <div id="entriesContainer">
+                        <!-- Entry fields will be generated here -->
+                    </div>
+
+                    <div>
+                        <button type="submit" class="btn-primary">🚀 Send to N8N</button>
+                        <button type="reset" class="btn-secondary" onclick="resetForm()">Clear Form</button>
+                    </div>
+                </form>
+
+                <div id="formMessage" style="margin-top: 1rem;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching function
+        function switchTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Remove active from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected tab content
+            if (tabName === 'received') {
+                document.getElementById('receivedTab').classList.add('active');
+                document.querySelectorAll('.tab')[0].classList.add('active');
+            } else if (tabName === 'send') {
+                document.getElementById('sendTab').classList.add('active');
+                document.querySelectorAll('.tab')[1].classList.add('active');
+            }
+        }
+
+        // Initialize form with 1 entry on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateEntryFields();
+        });
+
+        function deleteRecord(id) {
+            if (confirm('Are you sure you want to delete this record?')) {
+                fetch(`/api/delete/${id}`, {
+                    method: 'DELETE'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Error deleting record: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    alert('Error: ' + error);
+                });
+            }
+        }
+
+        function updateEntryFields() {
+            const numEntries = parseInt(document.getElementById('numEntries').value);
+            const container = document.getElementById('entriesContainer');
+            container.innerHTML = '';
+
+            for (let i = 0; i < numEntries; i++) {
+                const entryDiv = document.createElement('div');
+                if (i > 0) {
+                    entryDiv.className = 'entry-separator';
+                }
+
+                entryDiv.innerHTML = `
+                    ${numEntries > 1 ? `<div class="entry-header">Entry ${i + 1}</div>` : ''}
+
+                    <div class="form-group">
+                        <label class="form-label">Name *</label>
+                        <input type="text" id="name_${i}" class="form-input" placeholder="John Doe" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Email *</label>
+                        <input type="email" id="email_${i}" class="form-input" placeholder="user@example.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Notes *</label>
+                        <textarea id="notes_${i}" class="form-input" placeholder="Enter meeting notes..." required></textarea>
+                    </div>
+                `;
+
+                container.appendChild(entryDiv);
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('numEntries').value = 1;
+            updateEntryFields();
+            document.getElementById('formMessage').innerHTML = '';
+        }
+
+        function sendToN8N(event) {
+            event.preventDefault();
+
+            const mode = document.getElementById('mode').value;
+            const numEntries = parseInt(document.getElementById('numEntries').value);
+            const messageDiv = document.getElementById('formMessage');
+
+            // Collect all entries
+            const items = [];
+            for (let i = 0; i < numEntries; i++) {
+                const entry = {
+                    Name: document.getElementById(`name_${i}`).value,
+                    Email: document.getElementById(`email_${i}`).value,
+                    Notes: document.getElementById(`notes_${i}`).value
+                };
+                items.push(entry);
+            }
+
+            messageDiv.innerHTML = '<p style="color: #2563eb;">⏳ Sending data...</p>';
+
+            // Use batch endpoint if multiple entries, otherwise single send
+            if (items.length === 1) {
+                // Single entry - send directly
+                const endpoint = mode === 'test' ? '/api/send/test' : '/api/send/prod';
+
+                fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(items[0])
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        messageDiv.innerHTML = `
+                            <div style="background: #f0fdf4; border: 1px solid #86efac; padding: 1rem; border-radius: 6px; color: #166534;">
+                                ✅ ${result.message}
+                            </div>
+                        `;
+                        resetForm();
+                        setTimeout(() => location.reload(), 2000);
+                    } else {
+                        showError(messageDiv, result.error);
+                    }
+                })
+                .catch(error => showError(messageDiv, error));
+            } else {
+                // Multiple entries - send as batch to items endpoint
+                const payload = {
+                    items: items
+                };
+
+                // Send each item individually to n8n
+                const endpoint = mode === 'test' ? '/api/send/test' : '/api/send/prod';
+
+                // For multiple items, send the items array directly
+                fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        messageDiv.innerHTML = `
+                            <div style="background: #f0fdf4; border: 1px solid #86efac; padding: 1rem; border-radius: 6px; color: #166534;">
+                                ✅ Successfully sent ${items.length} entries to N8N!
+                            </div>
+                        `;
+                        resetForm();
+                        setTimeout(() => location.reload(), 2000);
+                    } else {
+                        showError(messageDiv, result.error);
+                    }
+                })
+                .catch(error => showError(messageDiv, error));
+            }
+        }
+
+        function showError(messageDiv, error) {
+            messageDiv.innerHTML = `
+                <div style="background: #fef2f2; border: 1px solid #fca5a5; padding: 1rem; border-radius: 6px; color: #991b1b;">
+                    ❌ Error: ${error}
+                </div>
+            `;
+        }
+
+        // Download CSV Template
+        function downloadTemplate() {
+            const csvContent = "Name,Email,Notes\nJohn Doe,john@example.com,Meeting notes here\nJane Smith,jane@example.com,Follow up required";
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'n8n_template.csv';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Handle CSV Upload
+        function handleCSVUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const text = e.target.result;
+                const lines = text.split('\n').filter(line => line.trim());
+
+                // Skip header row
+                const dataLines = lines.slice(1);
+
+                // Update number of entries
+                document.getElementById('numEntries').value = dataLines.length;
+                updateEntryFields();
+
+                // Populate fields with CSV data
+                dataLines.forEach((line, index) => {
+                    const values = line.split(',').map(v => v.trim().replace(/^"|"$/g, ''));
+                    if (values.length >= 3) {
+                        document.getElementById(`name_${index}`).value = values[0] || '';
+                        document.getElementById(`email_${index}`).value = values[1] || '';
+                        document.getElementById(`notes_${index}`).value = values[2] || '';
+                    }
+                });
+
+                // Show success message
+                const messageDiv = document.getElementById('formMessage');
+                messageDiv.innerHTML = `
+                    <div style="background: #f0fdf4; border: 1px solid #86efac; padding: 1rem; border-radius: 6px; color: #166534;">
+                        ✅ CSV uploaded successfully! Loaded ${dataLines.length} entries.
+                    </div>
+                `;
+            };
+            reader.readAsText(file);
+        }
+
+        // Auto-refresh every 30 seconds
+        setTimeout(() => {
+            location.reload();
+        }, 30000);
+    </script>
+</body>
+</html>
