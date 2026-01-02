@@ -279,9 +279,10 @@ def health():
         "database": "connected" if os.path.exists(DATABASE) else "not initialized"
     }), 200
 
+# Initialize database when app starts (for production servers like gunicorn)
+init_db()
+
 if __name__ == '__main__':
-    # Initialize database
-    init_db()
     # Run the app
     port = int(os.environ.get('PORT', 8000))
     app.run(host='0.0.0.0', port=port, debug=False)
