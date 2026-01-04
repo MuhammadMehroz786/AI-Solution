@@ -355,6 +355,7 @@
 
         .status-msg.success { background: var(--success-bg); color: var(--success-text); display: flex; border: 1px solid #bbf7d0; }
         .status-msg.error { background: var(--error-bg); color: var(--error-text); display: flex; border: 1px solid #fecaca; }
+        .status-msg.info { background: #eff6ff; color: #1e40af; display: flex; border: 1px solid #bfdbfe; }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-5px); }
@@ -520,7 +521,7 @@
 
             statusDiv.style.display = 'none';
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Sending...';
+            submitBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Processing Workflow...';
 
             const payload = {
                 "Company_Name": document.getElementById('company').value,
@@ -531,7 +532,7 @@
             };
 
             try {
-                const endpoint = `/api/send/${state.single.mode}`;
+                const endpoint = `/api/process/${state.single.mode}`;
                 const response = await fetch(endpoint, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -540,18 +541,62 @@
 
                 const result = await response.json();
 
-                if (result.success) {
-                    statusDiv.innerHTML = `<i class="fa-solid fa-check-circle"></i> Sent to ${state.single.mode.toUpperCase()} webhook!`;
-                    statusDiv.className = 'status-msg success';
-                    document.getElementById('single-form').reset();
+                if (result.success && result.job_id) {
+                    statusDiv.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> ${result.message}`;
+                    statusDiv.className = 'status-msg info';
+                    statusDiv.style.display = 'block';
+
+                    // Poll for status
+                    const pollStatus = async () => {
+                        try {
+                            const statusResponse = await fetch(`/api/status/${result.job_id}`);
+                            const statusResult = await statusResponse.json();
+
+                            if (statusResult.success) {
+                                const jobStatus = statusResult.status;
+
+                                if (jobStatus.status === 'completed') {
+                                    const jobResult = jobStatus.result;
+                                    if (jobResult.success) {
+                                        statusDiv.innerHTML = `<i class="fa-solid fa-check-circle"></i> ✅ Workflow Complete!<br>
+                                            <small>Processed: ${jobResult.successful}/${jobResult.total_processed}</small><br>
+                                            <small><a href="${jobResult.spreadsheet_url}" target="_blank">View Spreadsheet</a></small>`;
+                                        statusDiv.className = 'status-msg success';
+                                        document.getElementById('single-form').reset();
+                                        submitBtn.disabled = false;
+                                        submitBtn.innerText = originalText;
+                                    } else {
+                                        statusDiv.innerHTML = `<i class="fa-solid fa-exclamation-circle"></i> Error: ${jobResult.error}`;
+                                        statusDiv.className = 'status-msg error';
+                                        submitBtn.disabled = false;
+                                        submitBtn.innerText = originalText;
+                                    }
+                                } else if (jobStatus.status === 'failed') {
+                                    statusDiv.innerHTML = `<i class="fa-solid fa-exclamation-circle"></i> Workflow failed`;
+                                    statusDiv.className = 'status-msg error';
+                                    submitBtn.disabled = false;
+                                    submitBtn.innerText = originalText;
+                                } else {
+                                    // Still processing, poll again
+                                    setTimeout(pollStatus, 2000);
+                                }
+                            }
+                        } catch (err) {
+                            console.error('Status poll error:', err);
+                            setTimeout(pollStatus, 2000);
+                        }
+                    };
+
+                    pollStatus();
                 } else {
                     statusDiv.innerHTML = `<i class="fa-solid fa-exclamation-circle"></i> Error: ${result.error}`;
                     statusDiv.className = 'status-msg error';
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = originalText;
                 }
             } catch (error) {
                 statusDiv.innerHTML = `<i class="fa-solid fa-exclamation-circle"></i> Error: ${error.message}`;
                 statusDiv.className = 'status-msg error';
-            } finally {
                 submitBtn.disabled = false;
                 submitBtn.innerText = originalText;
             }
@@ -606,7 +651,7 @@
 
             const originalText = bulkSubmitBtn.innerText;
             bulkSubmitBtn.disabled = true;
-            bulkSubmitBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Processing...';
+            bulkSubmitBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Processing Workflow...';
             bulkStatusDiv.style.display = 'none';
 
             const reader = new FileReader();
@@ -616,56 +661,101 @@
                     const lines = text.split('\n').filter(line => line.trim());
                     const dataLines = lines.slice(1);
 
-                    let successCount = 0;
-                    let errorCount = 0;
-
+                    const items = [];
                     for (const line of dataLines) {
                         const fields = line.split(',').map(f => f.trim().replace(/^"|"$/g, ''));
 
                         if (fields.length >= 6) {
-                            const data = {
+                            items.push({
                                 Company_Name: fields[0],
                                 First_Name: fields[1],
                                 Last_Name: fields[2],
                                 Job_Title: fields[3],
                                 Email: fields[4],
                                 Website: fields[5]
-                            };
-
-                            const endpoint = `/api/send/${state.bulk.mode}`;
-
-                            try {
-                                const response = await fetch(endpoint, {
-                                    method: 'POST',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify(data)
-                                });
-
-                                const result = await response.json();
-                                if (result.success) {
-                                    successCount++;
-                                } else {
-                                    errorCount++;
-                                }
-                            } catch (error) {
-                                errorCount++;
-                            }
-
-                            await new Promise(resolve => setTimeout(resolve, 100));
+                            });
                         }
                     }
 
-                    bulkStatusDiv.innerHTML = `<i class="fa-solid fa-check-circle"></i> Upload complete! Success: ${successCount}, Errors: ${errorCount}`;
-                    bulkStatusDiv.className = successCount > 0 ? 'status-msg success' : 'status-msg error';
+                    if (items.length === 0) {
+                        bulkStatusDiv.innerHTML = '<i class="fa-solid fa-exclamation-circle"></i> No valid data found in CSV';
+                        bulkStatusDiv.className = 'status-msg error';
+                        bulkStatusDiv.style.display = 'block';
+                        bulkSubmitBtn.disabled = false;
+                        bulkSubmitBtn.innerText = originalText;
+                        return;
+                    }
 
-                    state.bulk.file = null;
-                    fileBadge.style.display = 'none';
-                    fileInput.value = "";
-                    bulkSubmitBtn.disabled = true;
+                    const endpoint = `/api/process/${state.bulk.mode}`;
+                    const response = await fetch(endpoint, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ items: items })
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success && result.job_id) {
+                        bulkStatusDiv.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> ${result.message}`;
+                        bulkStatusDiv.className = 'status-msg info';
+                        bulkStatusDiv.style.display = 'block';
+
+                        // Poll for status
+                        const pollStatus = async () => {
+                            try {
+                                const statusResponse = await fetch(`/api/status/${result.job_id}`);
+                                const statusResult = await statusResponse.json();
+
+                                if (statusResult.success) {
+                                    const jobStatus = statusResult.status;
+
+                                    if (jobStatus.status === 'completed') {
+                                        const jobResult = jobStatus.result;
+                                        if (jobResult.success) {
+                                            bulkStatusDiv.innerHTML = `<i class="fa-solid fa-check-circle"></i> ✅ Workflow Complete!<br>
+                                                <small>Processed: ${jobResult.successful}/${jobResult.total_processed} prospects</small><br>
+                                                <small><a href="${jobResult.spreadsheet_url}" target="_blank">View Spreadsheet</a></small>`;
+                                            bulkStatusDiv.className = 'status-msg success';
+                                            state.bulk.file = null;
+                                            fileBadge.style.display = 'none';
+                                            fileInput.value = "";
+                                            bulkSubmitBtn.disabled = true;
+                                            bulkSubmitBtn.innerText = originalText;
+                                        } else {
+                                            bulkStatusDiv.innerHTML = `<i class="fa-solid fa-exclamation-circle"></i> Error: ${jobResult.error}`;
+                                            bulkStatusDiv.className = 'status-msg error';
+                                            bulkSubmitBtn.disabled = false;
+                                            bulkSubmitBtn.innerText = originalText;
+                                        }
+                                    } else if (jobStatus.status === 'failed') {
+                                        bulkStatusDiv.innerHTML = `<i class="fa-solid fa-exclamation-circle"></i> Workflow failed`;
+                                        bulkStatusDiv.className = 'status-msg error';
+                                        bulkSubmitBtn.disabled = false;
+                                        bulkSubmitBtn.innerText = originalText;
+                                    } else {
+                                        // Still processing, poll again
+                                        setTimeout(pollStatus, 2000);
+                                    }
+                                }
+                            } catch (err) {
+                                console.error('Status poll error:', err);
+                                setTimeout(pollStatus, 2000);
+                            }
+                        };
+
+                        pollStatus();
+                    } else {
+                        bulkStatusDiv.innerHTML = `<i class="fa-solid fa-exclamation-circle"></i> Error: ${result.error}`;
+                        bulkStatusDiv.className = 'status-msg error';
+                        bulkStatusDiv.style.display = 'block';
+                        bulkSubmitBtn.disabled = false;
+                        bulkSubmitBtn.innerText = originalText;
+                    }
                 } catch (error) {
                     bulkStatusDiv.innerHTML = `<i class="fa-solid fa-exclamation-circle"></i> Error processing CSV: ${error.message}`;
                     bulkStatusDiv.className = 'status-msg error';
-                } finally {
+                    bulkStatusDiv.style.display = 'block';
+                    bulkSubmitBtn.disabled = false;
                     bulkSubmitBtn.innerText = originalText;
                 }
             };

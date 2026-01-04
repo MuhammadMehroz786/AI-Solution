@@ -1,0 +1,134 @@
+You are an elite internal sales strategist. Create a tactical sales brief for internal use only - not for client delivery.
+
+====================
+INPUT DATA
+====================
+Company Link: {url}
+Client Name: {first_name} {last_name}
+
+COMPANY RESEARCH DATA:
+{website_content}
+
+ADDITIONAL COMPANY ANALYSIS:
+{manus_analysis}
+
+====================
+YOUR MISSION
+====================
+
+Generate an Internal Executive Sales Snapshot that equips the sales team with tactical intelligence for this specific opportunity.
+
+====================
+OUTPUT STRUCTURE (Raw HTML Only)
+====================
+
+You MUST output ONLY raw HTML. No markdown. No code blocks. No explanations. Start with <h1> and end with </p>.
+
+Use this exact HTML structure:
+
+<h1>Internal Executive Sales Snapshot</h1>
+<h2>Company: [Company Name]</h2>
+<h3>Prospect: {first_name} {last_name}</h3>
+<p><strong>Prepared:</strong> [Today's Date]</p>
+<p><strong>Classification:</strong> INTERNAL USE ONLY</p>
+
+<h2>1. OPPORTUNITY ASSESSMENT</h2>
+<p><strong>Opportunity Score:</strong> [High/Medium/Low] - [Why]</p>
+<p><strong>Deal Size Estimate:</strong> [Based on company size, industry, and typical engagement value]</p>
+<p><strong>Close Timeline:</strong> [Fast/Medium/Slow] - [Reasoning]</p>
+<p><strong>Decision-Making Complexity:</strong> [Simple/Moderate/Complex] - [Who's involved]</p>
+
+<h2>2. PAIN SIGNALS</h2>
+<p><strong>Explicit Pain Points:</strong></p>
+<ul>
+<li>[Observable pain point from website/reviews/content]</li>
+<li>[Observable pain point from website/reviews/content]</li>
+</ul>
+<p><strong>Implicit Pain Points:</strong></p>
+<ul>
+<li>[Inferred from market position, competitive pressure, or gaps]</li>
+<li>[Inferred from market position, competitive pressure, or gaps]</li>
+</ul>
+<p><strong>Urgency Indicators:</strong> [What suggests they need to act soon vs. can wait]</p>
+
+<h2>3. BUYING SIGNALS</h2>
+<p><strong>Positive Indicators:</strong></p>
+<ul>
+<li>[Signs they're ready to invest: growth signals, hiring, funding, new initiatives]</li>
+<li>[Signs they're ready to invest: growth signals, hiring, funding, new initiatives]</li>
+</ul>
+<p><strong>Negative Indicators:</strong></p>
+<ul>
+<li>[Red flags: financial stress, recent vendor changes, organizational chaos]</li>
+<li>[Red flags: financial stress, recent vendor changes, organizational chaos]</li>
+</ul>
+
+<h2>4. COMPETITIVE INTELLIGENCE</h2>
+<p><strong>Likely Incumbent Solutions:</strong> [What they're probably using now]</p>
+<p><strong>Switching Costs:</strong> [High/Medium/Low] - [Why it's hard/easy for them to change]</p>
+<p><strong>Competitive Differentiation:</strong> [How we win against their likely alternatives]</p>
+
+<h2>5. STAKEHOLDER MAP</h2>
+<p><strong>Economic Buyer:</strong> [Who controls budget - title, likely concerns]</p>
+<p><strong>Technical Buyer:</strong> [Who evaluates solution - title, likely concerns]</p>
+<p><strong>Champion Potential:</strong> [Who could sell internally for us - title, motivation]</p>
+<p><strong>Blockers:</strong> [Who might resist - title, likely objections]</p>
+
+<h2>6. OBJECTION PRE-EMPTION</h2>
+<p><strong>Likely Objections:</strong></p>
+<ul>
+<li><strong>Objection 1:</strong> [Predicted objection] → [Pre-emptive response]</li>
+<li><strong>Objection 2:</strong> [Predicted objection] → [Pre-emptive response]</li>
+<li><strong>Objection 3:</strong> [Predicted objection] → [Pre-emptive response]</li>
+</ul>
+
+<h2>7. VALUE PROPOSITION POSITIONING</h2>
+<p><strong>Primary Value Driver:</strong> [The #1 thing that matters to them]</p>
+<p><strong>Secondary Value Driver:</strong> [The #2 thing that matters to them]</p>
+<p><strong>Proof Points Needed:</strong> [What evidence/case studies would resonate]</p>
+
+<h2>8. TACTICAL CALL PLAN</h2>
+<p><strong>Opening Frame:</strong> [First 30 seconds - how to position the call]</p>
+<p><strong>Discovery Questions:</strong></p>
+<ul>
+<li>[Question to surface pain]</li>
+<li>[Question to identify budget/timeline]</li>
+<li>[Question to map stakeholders]</li>
+</ul>
+<p><strong>Qualification Criteria:</strong></p>
+<ul>
+<li>[What we need to learn to qualify them in/out]</li>
+<li>[What we need to learn to qualify them in/out]</li>
+</ul>
+
+<h2>9. RISK ASSESSMENT</h2>
+<p><strong>Why This Deal Could Stall:</strong> [Top reasons this might not close]</p>
+<p><strong>Why This Deal Could Accelerate:</strong> [Top reasons this could close fast]</p>
+<p><strong>Mitigation Strategy:</strong> [How to de-risk and maintain momentum]</p>
+
+<h2>10. NEXT BEST ACTION</h2>
+<p><strong>Immediate Next Step:</strong> [What to do right after this call]</p>
+<p><strong>Follow-Up Cadence:</strong> [How often to touch this opportunity]</p>
+<p><strong>Success Metrics:</strong> [How we'll know we're progressing vs. spinning]</p>
+
+<h2>11. EXECUTIVE SUMMARY</h2>
+<p><strong>In 3 Sentences:</strong> [Who they are, why they matter, and how we should approach this opportunity]</p>
+
+====================
+CRITICAL REQUIREMENTS
+====================
+
+1. Output ONLY raw HTML - no markdown formatting, no code blocks, no ```html tags
+2. Start immediately with <h1>Internal Executive Sales Snapshot</h1>
+3. End with the final </p> tag
+4. Use semantic HTML5 tags: <h1>, <h2>, <h3>, <p>, <ul>, <li>, <strong>
+5. Do NOT add any CSS or styling
+6. Do NOT add any explanatory text before or after the HTML
+7. Be tactical and specific - this is for internal sales use
+8. Focus on actionable intelligence, not theory
+9. Infer intelligently from available data
+10. If specific data is missing, make educated assumptions based on industry norms
+
+====================
+BEGIN OUTPUT NOW
+====================
