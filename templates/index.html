@@ -391,11 +391,6 @@
             <section id="single-section">
                 <div class="section-header">
                     <div class="section-title"><i class="fa-solid fa-bolt"></i> Single Entry</div>
-                    <div class="toggle-container" onclick="toggleMode('single')">
-                        <div class="toggle-bg" id="single-toggle-bg"></div>
-                        <div class="toggle-option active" id="single-opt-test">TEST</div>
-                        <div class="toggle-option" id="single-opt-prod">PROD</div>
-                    </div>
                 </div>
 
                 <form id="single-form" class="form-grid">
@@ -437,11 +432,6 @@
             <section id="bulk-section">
                 <div class="section-header">
                     <div class="section-title"><i class="fa-solid fa-layer-group"></i> Bulk Upload</div>
-                    <div class="toggle-container" onclick="toggleMode('bulk')">
-                        <div class="toggle-bg" id="bulk-toggle-bg"></div>
-                        <div class="toggle-option active" id="bulk-opt-test">TEST</div>
-                        <div class="toggle-option" id="bulk-opt-prod">PROD</div>
-                    </div>
                 </div>
 
                 <div style="display: flex; gap: 1rem; flex-direction: column;">
@@ -476,41 +466,11 @@
     </div>
 
     <script>
-        // State Management
+        // State Management - Always use production mode
         const state = {
-            single: { mode: 'test' },
-            bulk: { mode: 'test', file: null }
+            single: { mode: 'prod' },
+            bulk: { mode: 'prod', file: null }
         };
-
-        // --- Toggle Logic ---
-        function toggleMode(section) {
-            const current = state[section].mode;
-            const newMode = current === 'test' ? 'prod' : 'test';
-            state[section].mode = newMode;
-
-            // Animate UI
-            const bg = document.getElementById(`${section}-toggle-bg`);
-            const optTest = document.getElementById(`${section}-opt-test`);
-            const optProd = document.getElementById(`${section}-opt-prod`);
-
-            if (newMode === 'prod') {
-                bg.style.transform = 'translateX(100%)';
-                optTest.classList.remove('active');
-                optProd.classList.add('active');
-            } else {
-                bg.style.transform = 'translateX(0)';
-                optTest.classList.add('active');
-                optProd.classList.remove('active');
-            }
-        }
-
-        // Initialize Toggles Width
-        window.addEventListener('load', () => {
-            ['single', 'bulk'].forEach(section => {
-               const bg = document.getElementById(`${section}-toggle-bg`);
-               bg.style.width = "calc(50% - 4px)";
-            });
-        });
 
         // --- Single Prospect Logic ---
         document.getElementById('single-form').addEventListener('submit', async (e) => {
