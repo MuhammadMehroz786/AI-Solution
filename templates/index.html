@@ -483,7 +483,7 @@
 
             statusDiv.style.display = 'none';
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Sending to N8N...';
+            submitBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Creating Your Reports...';
 
             // Construct payload
             const payload = {
@@ -508,7 +508,7 @@
                 });
 
                 if (response.ok) {
-                    statusDiv.innerHTML = `<i class="fa-solid fa-check-circle"></i> ✅ Sent to N8N successfully!`;
+                    statusDiv.innerHTML = `<i class="fa-solid fa-check-circle"></i> ✅ Reports generated successfully!`;
                     statusDiv.className = 'status-msg success';
                     statusDiv.style.display = 'block';
                     document.getElementById('single-form').reset();
@@ -609,7 +609,7 @@
                         }
                     }
 
-                    bulkStatusDiv.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Starting batch processing...`;
+                    bulkStatusDiv.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Preparing your intelligence reports...`;
                     bulkStatusDiv.className = 'status-msg info';
                     bulkStatusDiv.style.display = 'block';
 
@@ -617,8 +617,8 @@
                     const batchId = `batch_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
                     console.log('Batch ID:', batchId);
 
-                    bulkSubmitBtn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Processing Batch...`;
-                    bulkStatusDiv.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Flask is processing all ${items.length} prospects (Manus AI + GPT for each)...<br><small>This may take several minutes. Please wait...</small>`;
+                    bulkSubmitBtn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Generating Reports...`;
+                    bulkStatusDiv.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Analyzing ${items.length} prospects and creating intelligence reports...<br><small>This may take several minutes. Please wait...</small>`;
 
                     try {
                         // Send ALL items to Flask at once
@@ -647,21 +647,21 @@
                             const successCount = results.filter(r => r.status === 'completed').length;
                             const failCount = results.filter(r => r.status === 'failed').length;
 
-                            bulkStatusDiv.innerHTML = `<i class="fa-solid fa-check-circle"></i> ✅ Batch Complete!<br>
-                                <small>Total: ${items.length} prospects</small><br>
+                            bulkStatusDiv.innerHTML = `<i class="fa-solid fa-check-circle"></i> ✅ Reports Generated Successfully!<br>
+                                <small>Total: ${items.length} prospects analyzed</small><br>
                                 <small>Success: ${successCount} | Failed: ${failCount}</small><br>
-                                <small>All document URLs collected!</small>`;
+                                <small>All intelligence reports are ready!</small>`;
                             bulkStatusDiv.className = 'status-msg success';
 
                             // Store results for display
                             window.batchResults = results;
                         } else {
-                            bulkStatusDiv.innerHTML = `<i class="fa-solid fa-exclamation-circle"></i> ❌ Batch Failed!<br>
+                            bulkStatusDiv.innerHTML = `<i class="fa-solid fa-exclamation-circle"></i> ❌ Report Generation Failed!<br>
                                 <small>${result.error || 'Unknown error'}</small>`;
                             bulkStatusDiv.className = 'status-msg error';
                         }
                     } catch (error) {
-                        bulkStatusDiv.innerHTML = `<i class="fa-solid fa-exclamation-circle"></i> ❌ Batch Failed!<br>
+                        bulkStatusDiv.innerHTML = `<i class="fa-solid fa-exclamation-circle"></i> ❌ Report Generation Failed!<br>
                             <small>${error.message}</small>`;
                         bulkStatusDiv.className = 'status-msg error';
                     }
