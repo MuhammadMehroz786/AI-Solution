@@ -485,21 +485,24 @@
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Sending to N8N...';
 
+            // Extract website from email domain
+            const email = document.getElementById('email').value;
+            const emailDomain = email.split('@')[1];
+            const website = 'https://' + emailDomain;
+
             // Construct payload
             const payload = {
                 "Company_Name": document.getElementById('company').value,
                 "First_Name": document.getElementById('fname').value,
                 "Last_Name": document.getElementById('lname').value,
                 "LinkedIn_URL": document.getElementById('linkedin').value,
-                "Email": document.getElementById('email').value
+                "Email": email,
+                "Website": website
             };
 
             try {
-                // Send to N8N Webhook (Test Endpoint)
-                // Note: Ensure your N8N instance allows CORS from localhost if testing locally
-                // Send to Local Proxy (Bypass CORS)
-                // The proxy at localhost:8000 will forward to N8N
-                const response = await fetch('http://localhost:8000/api/proxy/single-entry', {
+                // Send to workflow processing endpoint
+                const response = await fetch('/api/process/prod', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
