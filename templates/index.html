@@ -621,7 +621,7 @@
                     bulkStatusDiv.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Analyzing ${items.length} prospects and creating intelligence reports...<br><small>This may take several minutes. Please wait...</small>`;
 
                     try {
-                        // Send ALL items to Flask at once
+                        // Send ALL items for processing
                         const response = await fetch('/api/send-to-n8n', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
