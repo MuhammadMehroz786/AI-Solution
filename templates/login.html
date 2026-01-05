@@ -123,7 +123,7 @@
             border-radius: 8px;
             margin-bottom: 1.5rem;
             font-size: 0.9rem;
-            display: flex;
+            display: none; /* Hidden by default */
             align-items: center;
             gap: 0.5rem;
             animation: fadeIn 0.3s ease;
@@ -233,24 +233,22 @@
 
         <!-- LOGIN FORM -->
         <div class="login-form">
-            {% if error %}
-            <div class="error-message">
-                <i class="fa-solid fa-exclamation-circle"></i> {{ error }}
+            <div id="error-msg" class="error-message">
+                <i class="fa-solid fa-exclamation-circle"></i> Invalid credentials
             </div>
-            {% endif %}
 
-            <form method="POST" action="/login">
+            <form id="loginForm">
                 <div class="form-group">
                     <div class="input-wrapper">
                         <i class="fa-regular fa-user input-icon"></i>
-                        <input type="text" name="username" placeholder="Username" required autofocus>
+                        <input type="text" id="username" name="username" placeholder="Username" required autofocus>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <div class="input-wrapper">
                         <i class="fa-solid fa-lock input-icon"></i>
-                        <input type="password" name="password" placeholder="Password" required>
+                        <input type="password" id="password" name="password" placeholder="Password" required>
                     </div>
                 </div>
 
@@ -260,6 +258,23 @@
             </form>
         </div>
     </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
+            const errorDiv = document.getElementById('error-msg');
+
+            // Simple client-side check for demo
+            if(user === 'emrgmedia' && pass === 'Mario') {
+                window.location.href = 'index.html';
+            } else {
+                errorDiv.style.display = 'flex';
+                errorDiv.innerHTML = '<i class="fa-solid fa-exclamation-circle"></i> Invalid username or password (Try: emrgmedia / Mario)';
+            }
+        });
+    </script>
 
 </body>
 </html>

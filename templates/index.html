@@ -1,24 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dream 100 Advantage</title>
     <!-- Inter Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         :root {
             /* Modern Electric Blue Palette (Tech/SaaS Standard) */
-            --primary: #2563eb; /* Blue 600 */
-            --primary-gradient: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); /* Blue 600 to Blue 700 */
-            --primary-hover: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%); /* Darker Blue on hover */
+            --primary: #2563eb;
+            /* Blue 600 */
+            --primary-gradient: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            /* Blue 600 to Blue 700 */
+            --primary-hover: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+            /* Darker Blue on hover */
 
-            --text-main: #0f172a; /* Slate 900 */
-            --text-secondary: #64748b; /* Slate 500 */
-            --border: #e2e8f0; /* Slate 200 */
+            --text-main: #0f172a;
+            /* Slate 900 */
+            --text-secondary: #64748b;
+            /* Slate 500 */
+            --border: #e2e8f0;
+            /* Slate 200 */
             --input-bg: #f8fafc;
             --input-border: #cbd5e1;
 
@@ -59,7 +67,8 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(15, 23, 42, 0.7); /* Slate 900 tint */
+            background: rgba(15, 23, 42, 0.7);
+            /* Slate 900 tint */
             z-index: 0;
             backdrop-filter: blur(3px);
         }
@@ -161,45 +170,8 @@
         }
 
         .section-title i {
-            color: var(--primary); /* Blue icon */
-        }
-
-        /* --- Toggle Switch --- */
-        .toggle-container {
-            background: #f1f5f9;
-            padding: 4px;
-            border-radius: 50px;
-            display: inline-flex;
-            position: relative;
-            cursor: pointer;
-            user-select: none;
-            border: 1px solid var(--border);
-        }
-
-        .toggle-option {
-            padding: 6px 16px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            z-index: 2;
-            position: relative;
-            color: var(--text-secondary);
-            transition: color 0.3s;
-        }
-
-        .toggle-option.active {
-            color: white;
-        }
-
-        .toggle-bg {
-            position: absolute;
-            top: 4px;
-            left: 4px;
-            height: calc(100% - 8px);
-            width: 50%;
-            background: var(--primary-gradient);
-            border-radius: 50px;
-            box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);
-            transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+            color: var(--primary);
+            /* Blue icon */
         }
 
         /* --- Forms --- */
@@ -240,10 +212,11 @@
             outline: none;
             border-color: var(--primary);
             background: white;
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15); /* Blue focus ring */
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+            /* Blue focus ring */
         }
 
-        input:focus + .input-icon,
+        input:focus+.input-icon,
         .input-wrapper:focus-within .input-icon {
             color: var(--primary);
         }
@@ -316,7 +289,8 @@
 
         .drop-zone:hover {
             border-color: var(--primary);
-            background: #eff6ff; /* Very light blue */
+            background: #eff6ff;
+            /* Very light blue */
         }
 
         .drop-zone-text {
@@ -337,7 +311,8 @@
             background: white;
             padding: 4px 10px;
             border-radius: 6px;
-            border: 1px solid #bfdbfe; /* Light blue border */
+            border: 1px solid #bfdbfe;
+            /* Light blue border */
             margin-top: 0.5rem;
         }
 
@@ -353,13 +328,37 @@
             animation: fadeIn 0.3s ease;
         }
 
-        .status-msg.success { background: var(--success-bg); color: var(--success-text); display: flex; border: 1px solid #bbf7d0; }
-        .status-msg.error { background: var(--error-bg); color: var(--error-text); display: flex; border: 1px solid #fecaca; }
-        .status-msg.info { background: #eff6ff; color: #1e40af; display: flex; border: 1px solid #bfdbfe; }
+        .status-msg.success {
+            background: var(--success-bg);
+            color: var(--success-text);
+            display: flex;
+            border: 1px solid #bbf7d0;
+        }
+
+        .status-msg.error {
+            background: var(--error-bg);
+            color: var(--error-text);
+            display: flex;
+            border: 1px solid #fecaca;
+        }
+
+        .status-msg.info {
+            background: #eff6ff;
+            color: #1e40af;
+            display: flex;
+            border: 1px solid #bfdbfe;
+        }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-5px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         @media (max-width: 640px) {
@@ -368,12 +367,14 @@
                 min-height: 100vh;
                 max-width: 100%;
             }
+
             body {
                 padding: 0;
             }
         }
     </style>
 </head>
+
 <body>
 
     <div class="main-container">
@@ -381,8 +382,11 @@
         <!-- HEADER TEXT -->
         <header class="header-section">
             <h1>Dream 100 Advantage™</h1>
-            <p style="color: var(--text-main); font-weight: 700; margin-bottom: 0.5rem; font-size: 1.2rem;">Prospect Intelligence Built to Win Deals</p>
-            <p style="font-size: 1rem; line-height: 1.6; max-width: 90%; margin: 0 auto;">Dream 100 Advantage™ gives you a real competitive edge by making sure you understand your prospects before you ever reach out, not after.</p>
+            <p style="color: var(--text-main); font-weight: 700; margin-bottom: 0.5rem; font-size: 1.2rem;">Prospect
+                Intelligence Built to Win Deals</p>
+            <p style="font-size: 1rem; line-height: 1.6; max-width: 90%; margin: 0 auto;">Dream 100 Advantage™ gives you
+                a real competitive edge by making sure you understand your prospects before you ever reach out, not
+                after.</p>
         </header>
 
         <div class="content-wrapper">
@@ -445,8 +449,10 @@
                     </div>
 
                     <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <button type="button" class="btn-text" onclick="downloadTemplate()"><i class="fa-solid fa-download"></i> Template</button>
-                        <button type="button" class="btn-primary" id="bulk-submit" style="width: auto; padding: 0.6rem 1.5rem;" disabled>
+                        <button type="button" class="btn-text" onclick="downloadTemplate()"><i
+                                class="fa-solid fa-download"></i> Template</button>
+                        <button type="button" class="btn-primary" id="bulk-submit"
+                            style="width: auto; padding: 0.6rem 1.5rem;" disabled>
                             Process Batch
                         </button>
                     </div>
@@ -458,7 +464,7 @@
 
         <!-- FOOTER / LOGOUT -->
         <footer class="footer-section">
-            <a href="/logout" class="logout-link">
+            <a href="login.html" class="logout-link">
                 <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
             </a>
         </footer>
@@ -466,11 +472,7 @@
     </div>
 
     <script>
-        // State Management - Always use production mode
-        const state = {
-            single: { mode: 'prod' },
-            bulk: { mode: 'prod', file: null }
-        };
+        // MOCK API LOGIC FOR UI CLONE
 
         // --- Single Prospect Logic ---
         document.getElementById('single-form').addEventListener('submit', async (e) => {
@@ -481,8 +483,9 @@
 
             statusDiv.style.display = 'none';
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Processing Workflow...';
+            submitBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Sending to N8N...';
 
+            // Construct payload
             const payload = {
                 "Company_Name": document.getElementById('company').value,
                 "First_Name": document.getElementById('fname').value,
@@ -492,71 +495,35 @@
             };
 
             try {
-                const endpoint = `/api/process/${state.single.mode}`;
-                const response = await fetch(endpoint, {
+                // Send to N8N Webhook (Test Endpoint)
+                // Note: Ensure your N8N instance allows CORS from localhost if testing locally
+                // Send to Local Proxy (Bypass CORS)
+                // The proxy at localhost:8000 will forward to N8N
+                const response = await fetch('http://localhost:8000/api/proxy/single-entry', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
                     body: JSON.stringify(payload)
                 });
 
-                const result = await response.json();
-
-                if (result.success && result.job_id) {
-                    statusDiv.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> ${result.message}`;
-                    statusDiv.className = 'status-msg info';
+                if (response.ok) {
+                    statusDiv.innerHTML = `<i class="fa-solid fa-check-circle"></i> ✅ Sent to N8N successfully!`;
+                    statusDiv.className = 'status-msg success';
                     statusDiv.style.display = 'block';
-
-                    // Poll for status
-                    const pollStatus = async () => {
-                        try {
-                            const statusResponse = await fetch(`/api/status/${result.job_id}`);
-                            const statusResult = await statusResponse.json();
-
-                            if (statusResult.success) {
-                                const jobStatus = statusResult.status;
-
-                                if (jobStatus.status === 'completed') {
-                                    const jobResult = jobStatus.result;
-                                    if (jobResult.success) {
-                                        statusDiv.innerHTML = `<i class="fa-solid fa-check-circle"></i> ✅ Workflow Complete!<br>
-                                            <small>Processed: ${jobResult.successful}/${jobResult.total_processed}</small><br>
-                                            <small><a href="${jobResult.spreadsheet_url}" target="_blank">View Spreadsheet</a></small>`;
-                                        statusDiv.className = 'status-msg success';
-                                        document.getElementById('single-form').reset();
-                                        submitBtn.disabled = false;
-                                        submitBtn.innerText = originalText;
-                                    } else {
-                                        statusDiv.innerHTML = `<i class="fa-solid fa-exclamation-circle"></i> Error: ${jobResult.error}`;
-                                        statusDiv.className = 'status-msg error';
-                                        submitBtn.disabled = false;
-                                        submitBtn.innerText = originalText;
-                                    }
-                                } else if (jobStatus.status === 'failed') {
-                                    statusDiv.innerHTML = `<i class="fa-solid fa-exclamation-circle"></i> Workflow failed`;
-                                    statusDiv.className = 'status-msg error';
-                                    submitBtn.disabled = false;
-                                    submitBtn.innerText = originalText;
-                                } else {
-                                    // Still processing, poll again
-                                    setTimeout(pollStatus, 2000);
-                                }
-                            }
-                        } catch (err) {
-                            console.error('Status poll error:', err);
-                            setTimeout(pollStatus, 2000);
-                        }
-                    };
-
-                    pollStatus();
+                    document.getElementById('single-form').reset();
                 } else {
-                    statusDiv.innerHTML = `<i class="fa-solid fa-exclamation-circle"></i> Error: ${result.error}`;
+                    const errorText = await response.text();
+                    statusDiv.innerHTML = `<i class="fa-solid fa-exclamation-circle"></i> Error: ${response.status} - ${errorText}`;
                     statusDiv.className = 'status-msg error';
-                    submitBtn.disabled = false;
-                    submitBtn.innerText = originalText;
+                    statusDiv.style.display = 'block';
                 }
             } catch (error) {
-                statusDiv.innerHTML = `<i class="fa-solid fa-exclamation-circle"></i> Error: ${error.message}`;
+                console.error('Webhook Error:', error);
+                statusDiv.innerHTML = `<i class="fa-solid fa-exclamation-circle"></i> Network Error: ${error.message}`;
                 statusDiv.className = 'status-msg error';
+                statusDiv.style.display = 'block';
+            } finally {
                 submitBtn.disabled = false;
                 submitBtn.innerText = originalText;
             }
@@ -569,6 +536,7 @@
         const fileNameText = document.getElementById('file-name-text');
         const bulkSubmitBtn = document.getElementById('bulk-submit');
         const bulkStatusDiv = document.getElementById('bulk-status');
+        const state = { bulk: { file: null } };
 
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
             dropZone.addEventListener(eventName, (e) => { e.preventDefault(); e.stopPropagation(); }, false);
@@ -576,7 +544,7 @@
 
         dropZone.addEventListener('drop', (e) => handleFiles(e.dataTransfer.files));
         dropZone.addEventListener('click', () => fileInput.click());
-        fileInput.addEventListener('change', function() { handleFiles(this.files); });
+        fileInput.addEventListener('change', function () { handleFiles(this.files); });
 
         function handleFiles(files) {
             if (files.length > 0) {
@@ -611,116 +579,112 @@
 
             const originalText = bulkSubmitBtn.innerText;
             bulkSubmitBtn.disabled = true;
-            bulkSubmitBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Processing Workflow...';
             bulkStatusDiv.style.display = 'none';
 
             const reader = new FileReader();
-            reader.onload = async function(e) {
+
+            reader.onload = async function (e) {
                 try {
                     const text = e.target.result;
                     const lines = text.split('\n').filter(line => line.trim());
-                    const dataLines = lines.slice(1);
 
-                    const items = [];
-                    for (const line of dataLines) {
+                    // Skip header
+                    const dataLines = lines.slice(1);
+                    if (dataLines.length === 0) {
+                        throw new Error("No valid data rows found in CSV");
+                    }
+
+                    // Generate a Unique Batch ID (Timestamp + Random String)
+                    const batchId = 'BATCH_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9).toUpperCase();
+
+                    bulkSubmitBtn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Initializing Batch ${dataLines.length} items...`;
+
+                    let successCount = 0;
+                    let failCount = 0;
+                    // Using the dedicated CSV webhook URL (Production Endpoint)
+                    const url = 'https://n8n.eventplanners.cloud/webhook/10c52471-6940-4fc8-a1c7-51ac515b23a5';
+
+                    // Parse and Send Row by Row
+                    for (let i = 0; i < dataLines.length; i++) {
+                        const line = dataLines[i];
+                        // Simple CSV parsing
                         const fields = line.split(',').map(f => f.trim().replace(/^"|"$/g, ''));
 
                         if (fields.length >= 6) {
-                            items.push({
+                            const payload = {
+                                Batch_ID: batchId,
+                                Row_Index: i + 1,
+                                Total_Rows: dataLines.length,
                                 Company_Name: fields[0],
                                 First_Name: fields[1],
                                 Last_Name: fields[2],
                                 Job_Title: fields[3],
                                 Email: fields[4],
                                 Website: fields[5]
-                            });
+                            };
+
+                            // Update UI Progress
+                            bulkSubmitBtn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Sending ${i + 1}/${dataLines.length}...`;
+
+                            try {
+                                const response = await fetch(url, {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify(payload)
+                                });
+
+                                if (response.ok) {
+                                    successCount++;
+                                } else {
+                                    console.error(`Failed row ${i + 1}: ${response.status}`);
+                                    failCount++;
+                                }
+                            } catch (err) {
+                                console.error(`Network error row ${i + 1}`, err);
+                                failCount++;
+                            }
                         }
                     }
 
-                    if (items.length === 0) {
-                        bulkStatusDiv.innerHTML = '<i class="fa-solid fa-exclamation-circle"></i> No valid data found in CSV';
-                        bulkStatusDiv.className = 'status-msg error';
+                    // Final Status
+                    if (successCount > 0) {
+                        bulkStatusDiv.innerHTML = `<i class="fa-solid fa-check-circle"></i> ✅ Upload Complete!<br>
+                            <small>Batch ID: <strong>${batchId}</strong></small><br>
+                            <small>Success: ${successCount} | Failed: ${failCount}</small>`;
+                        bulkStatusDiv.className = 'status-msg success';
                         bulkStatusDiv.style.display = 'block';
-                        bulkSubmitBtn.disabled = false;
+
+                        // Reset UI
+                        state.bulk.file = null;
+                        fileBadge.style.display = 'none';
+                        fileInput.value = "";
+                        bulkSubmitBtn.disabled = true;
                         bulkSubmitBtn.innerText = originalText;
-                        return;
-                    }
-
-                    const endpoint = `/api/process/${state.bulk.mode}`;
-                    const response = await fetch(endpoint, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ items: items })
-                    });
-
-                    const result = await response.json();
-
-                    if (result.success && result.job_id) {
-                        bulkStatusDiv.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> ${result.message}`;
-                        bulkStatusDiv.className = 'status-msg info';
-                        bulkStatusDiv.style.display = 'block';
-
-                        // Poll for status
-                        const pollStatus = async () => {
-                            try {
-                                const statusResponse = await fetch(`/api/status/${result.job_id}`);
-                                const statusResult = await statusResponse.json();
-
-                                if (statusResult.success) {
-                                    const jobStatus = statusResult.status;
-
-                                    if (jobStatus.status === 'completed') {
-                                        const jobResult = jobStatus.result;
-                                        if (jobResult.success) {
-                                            bulkStatusDiv.innerHTML = `<i class="fa-solid fa-check-circle"></i> ✅ Workflow Complete!<br>
-                                                <small>Processed: ${jobResult.successful}/${jobResult.total_processed} prospects</small><br>
-                                                <small><a href="${jobResult.spreadsheet_url}" target="_blank">View Spreadsheet</a></small>`;
-                                            bulkStatusDiv.className = 'status-msg success';
-                                            state.bulk.file = null;
-                                            fileBadge.style.display = 'none';
-                                            fileInput.value = "";
-                                            bulkSubmitBtn.disabled = true;
-                                            bulkSubmitBtn.innerText = originalText;
-                                        } else {
-                                            bulkStatusDiv.innerHTML = `<i class="fa-solid fa-exclamation-circle"></i> Error: ${jobResult.error}`;
-                                            bulkStatusDiv.className = 'status-msg error';
-                                            bulkSubmitBtn.disabled = false;
-                                            bulkSubmitBtn.innerText = originalText;
-                                        }
-                                    } else if (jobStatus.status === 'failed') {
-                                        bulkStatusDiv.innerHTML = `<i class="fa-solid fa-exclamation-circle"></i> Workflow failed`;
-                                        bulkStatusDiv.className = 'status-msg error';
-                                        bulkSubmitBtn.disabled = false;
-                                        bulkSubmitBtn.innerText = originalText;
-                                    } else {
-                                        // Still processing, poll again
-                                        setTimeout(pollStatus, 2000);
-                                    }
-                                }
-                            } catch (err) {
-                                console.error('Status poll error:', err);
-                                setTimeout(pollStatus, 2000);
-                            }
-                        };
-
-                        pollStatus();
                     } else {
-                        bulkStatusDiv.innerHTML = `<i class="fa-solid fa-exclamation-circle"></i> Error: ${result.error}`;
-                        bulkStatusDiv.className = 'status-msg error';
-                        bulkStatusDiv.style.display = 'block';
-                        bulkSubmitBtn.disabled = false;
-                        bulkSubmitBtn.innerText = originalText;
+                        throw new Error(`All ${dataLines.length} rows failed to upload.`);
                     }
+
                 } catch (error) {
-                    bulkStatusDiv.innerHTML = `<i class="fa-solid fa-exclamation-circle"></i> Error processing CSV: ${error.message}`;
+                    console.error('Batch Upload Error:', error);
+                    bulkStatusDiv.innerHTML = `<i class="fa-solid fa-exclamation-circle"></i> Error: ${error.message}`;
                     bulkStatusDiv.className = 'status-msg error';
                     bulkStatusDiv.style.display = 'block';
                     bulkSubmitBtn.disabled = false;
                     bulkSubmitBtn.innerText = originalText;
                 }
             };
+
+            reader.onerror = function () {
+                bulkStatusDiv.innerHTML = '<i class="fa-solid fa-exclamation-circle"></i> Error reading file';
+                bulkStatusDiv.className = 'status-msg error';
+                bulkStatusDiv.style.display = 'block';
+                bulkSubmitBtn.disabled = false;
+                bulkSubmitBtn.innerText = originalText;
+            };
+
             reader.readAsText(state.bulk.file);
         });
     </script>
 </body>
+
 </html>
