@@ -78,6 +78,74 @@ def index():
 
     return render_template('index.html')
 
+# Route: Simple proxy to N8N - just send data without waiting for response
+@app.route('/api/send-to-n8n', methods=['POST'])
+def send_to_n8n_simple():
+    """Send CSV batch data directly to N8N without processing"""
+    try:
+        data = request.get_json()
+
+        if not data:
+            return jsonify({
+                "success": False,
+                "error": "No data provided"
+            }), 400
+
+        # Expect batch data with items array
+        items = data.get('items', [])
+        batch_id = data.get('batch_id')
+
+        if not items:
+            return jsonify({
+                "success": False,
+                "error": "No items provided in batch"
+            }), 400
+
+        print(f"📦 Sending batch {batch_id} with {len(items)} items to N8N")
+
+        # Send directly to N8N CSV batch webhook
+        n8n_webhook = "https://n8n.eventplanners.cloud/webhook/322eefe8-2ea8-4b55-a28f-5840aa1484bd"
+
+        payload = {
+            'batch_id': batch_id,
+            'items': items
+        }
+
+        # Send to N8N without waiting for response (fire and forget)
+        response = requests.post(
+            n8n_webhook,
+            json=payload,
+            headers={'Content-Type': 'application/json'},
+            timeout=10  # Short timeout, just to confirm N8N received it
+        )
+
+        if response.status_code == 200:
+            print(f"✅ Data sent to N8N successfully")
+            return jsonify({
+                "success": True,
+                "message": f"Batch sent to N8N for processing",
+                "batch_id": batch_id,
+                "total_items": len(items)
+            })
+        else:
+            print(f"⚠️ N8N returned {response.status_code}")
+            return jsonify({
+                "success": False,
+                "error": f"N8N returned {response.status_code}: {response.text}"
+            }), response.status_code
+
+    except requests.exceptions.Timeout:
+        return jsonify({
+            "success": False,
+            "error": "N8N request timed out"
+        }), 504
+    except Exception as e:
+        print(f"❌ Error: {str(e)}")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
 # Route: Send single prospect to n8n (test mode)
 @app.route('/api/send/test', methods=['POST'])
 def send_to_n8n_test():
@@ -511,6 +579,37 @@ def n8n_callback():
             "error": str(e)
         }), 500
 
+# Route: Save Prospect Data (Stateless)
+@app.route('/api/save-prospect', methods=['POST'])
+def save_prospect():
+    """
+    Receive processed prospect data from N8N.
+    This endpoint is stateless and doesn't require a pre-existing job ID.
+    Usage: Call this from N8N HTTP Request node.
+    """
+    try:
+        data = request.json
+        
+        # Log the received data
+        print(f"💾 Received Data for Save:")
+        print(json.dumps(data, indent=2))
+        
+        # In a real app, you would save to database here
+        # db.session.add(Prospect(**data))
+        # db.session.commit()
+        
+        return jsonify({
+            "success": True,
+            "message": "Data received and saved successfully"
+        }), 200
+
+    except Exception as e:
+        print(f"❌ Save error: {str(e)}")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
 # Route: Check processing status
 @app.route('/api/status/<job_id>', methods=['GET'])
 def check_status(job_id):
@@ -536,6 +635,48 @@ def health():
         "status": "healthy",
         "service": "Dream 100 Advantage - Prospect Intelligence"
     }), 200
+
+# Route: Proxy for Single Entry (Bypass CORS)
+@app.route('/api/proxy/single-entry', methods=['POST', 'OPTIONS'])
+def proxy_single_entry():
+    """
+    Proxy request to N8N to avoid CORS issues from browser.
+    """
+    # Handle CORS preflight
+    if request.method == 'OPTIONS':
+        response = jsonify({'status': 'ok'})
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
+        response.headers.add('Access-Control-Allow-Methods', 'POST')
+        return response
+
+    try:
+        data = request.json
+        n8n_url = "https://n8n.eventplanners.cloud/webhook/2af2ce4c-6c51-4935-9f0a-1a019d4bd466"
+        
+        # Forward to N8N
+        print(f"🔄 Proxying request to N8N: {n8n_url}")
+        n8n_response = requests.post(n8n_url, json=data, timeout=30)
+        
+        # Return N8N response to UI
+        response = jsonify({
+            "success": n8n_response.status_code == 200,
+            "n8n_status": n8n_response.status_code,
+            "message": n8n_response.text
+        })
+        
+        # Add CORS headers to actual response
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response, n8n_response.status_code
+
+    except Exception as e:
+        print(f"❌ Proxy error: {str(e)}")
+        response = jsonify({
+            "success": False,
+            "error": str(e)
+        })
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response, 500
 
 if __name__ == '__main__':
     # Run the app

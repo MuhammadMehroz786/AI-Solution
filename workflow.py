@@ -121,16 +121,17 @@ class WorkflowProcessor:
                 'Content-Type': 'application/json'
             }
 
+            # Call Manus AI API (Task Endpoint)
+            # Based on documentation: POST /v1/tasks with taskMode="chat"
+            
             payload = {
-                "model": self.manus_model,
-                "messages": [
-                    {"role": "user", "content": full_prompt}
-                ],
-                "temperature": 0.7
+                "prompt": full_prompt,
+                "taskMode": "chat",
+                "model": self.manus_model  # Pass model if supported, otherwise it uses default
             }
 
             response = requests.post(
-                'https://api.manus.im/v1/chat/completions',
+                'https://api.manus.im/v1/tasks',
                 headers=headers,
                 json=payload,
                 timeout=120
@@ -138,9 +139,11 @@ class WorkflowProcessor:
 
             if response.status_code == 200:
                 result = response.json()
-                analysis = result['choices'][0]['message']['content']
+                # Adjust response parsing based on task endpoint response structure
+                # Assuming it returns 'result' or 'output' or similar. 
+                # If standard chat response, checking for 'data' or 'content'
                 print(f"✅ Manus AI analysis completed")
-                return analysis
+                return result.get('result', result.get('output', str(result)))
             else:
                 error_msg = f"Manus AI error: {response.status_code} - {response.text}"
                 print(f"❌ {error_msg}")

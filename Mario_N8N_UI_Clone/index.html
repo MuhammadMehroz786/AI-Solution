@@ -499,7 +499,7 @@
                 // Note: Ensure your N8N instance allows CORS from localhost if testing locally
                 // Send to Local Proxy (Bypass CORS)
                 // The proxy at localhost:8000 will forward to N8N
-                const response = await fetch('https://n8n.eventplanners.cloud/webhook/2af2ce4c-6c51-4935-9f0a-1a019d4bd466', {
+                const response = await fetch('http://localhost:8000/api/proxy/single-entry', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -587,94 +587,82 @@
                 try {
                     const text = e.target.result;
                     const lines = text.split('\n').filter(line => line.trim());
-                    const dataLines = lines.slice(1);
 
+                    // Skip header
+                    const dataLines = lines.slice(1);
                     if (dataLines.length === 0) {
                         throw new Error("No valid data rows found in CSV");
                     }
 
-                    // Parse CSV into items array
-                    const items = [];
-                    for (const line of dataLines) {
+                    // Generate a Unique Batch ID (Timestamp + Random String)
+                    const batchId = 'BATCH_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9).toUpperCase();
+
+                    bulkSubmitBtn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Initializing Batch ${dataLines.length} items...`;
+
+                    let successCount = 0;
+                    let failCount = 0;
+                    // Using the dedicated CSV webhook URL (Production Endpoint)
+                    const url = 'https://n8n.eventplanners.cloud/webhook/10c52471-6940-4fc8-a1c7-51ac515b23a5';
+
+                    // Parse and Send Row by Row
+                    for (let i = 0; i < dataLines.length; i++) {
+                        const line = dataLines[i];
+                        // Simple CSV parsing
                         const fields = line.split(',').map(f => f.trim().replace(/^"|"$/g, ''));
+
                         if (fields.length >= 6) {
-                            items.push({
+                            const payload = {
+                                Batch_ID: batchId,
+                                Row_Index: i + 1,
+                                Total_Rows: dataLines.length,
                                 Company_Name: fields[0],
                                 First_Name: fields[1],
                                 Last_Name: fields[2],
-                                Title: fields[3],
+                                Job_Title: fields[3],
                                 Email: fields[4],
                                 Website: fields[5]
-                            });
+                            };
+
+                            // Update UI Progress
+                            bulkSubmitBtn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Sending ${i + 1}/${dataLines.length}...`;
+
+                            try {
+                                const response = await fetch(url, {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify(payload)
+                                });
+
+                                if (response.ok) {
+                                    successCount++;
+                                } else {
+                                    console.error(`Failed row ${i + 1}: ${response.status}`);
+                                    failCount++;
+                                }
+                            } catch (err) {
+                                console.error(`Network error row ${i + 1}`, err);
+                                failCount++;
+                            }
                         }
                     }
 
-                    bulkStatusDiv.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Starting batch processing...`;
-                    bulkStatusDiv.className = 'status-msg info';
-                    bulkStatusDiv.style.display = 'block';
+                    // Final Status
+                    if (successCount > 0) {
+                        bulkStatusDiv.innerHTML = `<i class="fa-solid fa-check-circle"></i> ✅ Upload Complete!<br>
+                            <small>Batch ID: <strong>${batchId}</strong></small><br>
+                            <small>Success: ${successCount} | Failed: ${failCount}</small>`;
+                        bulkStatusDiv.className = 'status-msg success';
+                        bulkStatusDiv.style.display = 'block';
 
-                    // Generate unique batch ID (timestamp + random string)
-                    const batchId = `batch_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-                    console.log('Batch ID:', batchId);
-
-                    bulkSubmitBtn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Processing Batch...`;
-                    bulkStatusDiv.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Flask is processing all ${items.length} prospects (Manus AI + GPT for each)...<br><small>This may take several minutes. Please wait...</small>`;
-
-                    try {
-                        // Send ALL items to Flask at once
-                        const response = await fetch('/api/send-to-n8n', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                batch_id: batchId,
-                                items: items
-                            })
-                        });
-
-                        const result = await response.json();
-
-                        if (result.success && result.data) {
-                            // N8N returned all document URLs
-                            const processedItems = result.data.items || [];
-
-                            const results = processedItems.map(item => ({
-                                ...item,
-                                document1_url: item.document1_url || 'N/A',
-                                document2_url: item.document2_url || 'N/A',
-                                status: item.error ? 'failed' : 'completed'
-                            }));
-
-                            const successCount = results.filter(r => r.status === 'completed').length;
-                            const failCount = results.filter(r => r.status === 'failed').length;
-
-                            bulkStatusDiv.innerHTML = `<i class="fa-solid fa-check-circle"></i> ✅ Batch Complete!<br>
-                                <small>Total: ${items.length} prospects</small><br>
-                                <small>Success: ${successCount} | Failed: ${failCount}</small><br>
-                                <small>All document URLs collected!</small>`;
-                            bulkStatusDiv.className = 'status-msg success';
-
-                            // Store results for display
-                            window.batchResults = results;
-                        } else {
-                            bulkStatusDiv.innerHTML = `<i class="fa-solid fa-exclamation-circle"></i> ❌ Batch Failed!<br>
-                                <small>${result.error || 'Unknown error'}</small>`;
-                            bulkStatusDiv.className = 'status-msg error';
-                        }
-                    } catch (error) {
-                        bulkStatusDiv.innerHTML = `<i class="fa-solid fa-exclamation-circle"></i> ❌ Batch Failed!<br>
-                            <small>${error.message}</small>`;
-                        bulkStatusDiv.className = 'status-msg error';
+                        // Reset UI
+                        state.bulk.file = null;
+                        fileBadge.style.display = 'none';
+                        fileInput.value = "";
+                        bulkSubmitBtn.disabled = true;
+                        bulkSubmitBtn.innerText = originalText;
+                    } else {
+                        throw new Error(`All ${dataLines.length} rows failed to upload.`);
                     }
-
-                    // Log results for debugging
-                    console.log('Batch Results:', results);
-
-                    // Reset UI
-                    state.bulk.file = null;
-                    fileBadge.style.display = 'none';
-                    fileInput.value = "";
-                    bulkSubmitBtn.disabled = true;
-                    bulkSubmitBtn.innerText = originalText;
 
                 } catch (error) {
                     console.error('Batch Upload Error:', error);
