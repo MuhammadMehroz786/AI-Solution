@@ -237,7 +237,7 @@
                 <i class="fa-solid fa-exclamation-circle"></i> Invalid credentials
             </div>
 
-            <form id="loginForm">
+            <form id="loginForm" method="POST" action="/login">
                 <div class="form-group">
                     <div class="input-wrapper">
                         <i class="fa-regular fa-user input-icon"></i>
@@ -260,20 +260,13 @@
     </div>
 
     <script>
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const user = document.getElementById('username').value;
-            const pass = document.getElementById('password').value;
+        // Check if there's an error from server-side
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('error')) {
             const errorDiv = document.getElementById('error-msg');
-
-            // Simple client-side check for demo
-            if(user === 'emrgmedia' && pass === 'Mario') {
-                window.location.href = '/';
-            } else {
-                errorDiv.style.display = 'flex';
-                errorDiv.innerHTML = '<i class="fa-solid fa-exclamation-circle"></i> Invalid username or password (Try: emrgmedia / Mario)';
-            }
-        });
+            errorDiv.style.display = 'flex';
+            errorDiv.innerHTML = '<i class="fa-solid fa-exclamation-circle"></i> Invalid username or password';
+        }
     </script>
 
 </body>
