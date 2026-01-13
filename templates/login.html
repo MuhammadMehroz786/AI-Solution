@@ -260,13 +260,12 @@
     </div>
 
     <script>
-        // Check if there's an error from server-side
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('error')) {
-            const errorDiv = document.getElementById('error-msg');
-            errorDiv.style.display = 'flex';
-            errorDiv.innerHTML = '<i class="fa-solid fa-exclamation-circle"></i> Invalid username or password';
-        }
+        // Check if there's an error from server-side (template variable or URL param)
+        {% if error %}
+        const errorDiv = document.getElementById('error-msg');
+        errorDiv.style.display = 'flex';
+        errorDiv.innerHTML = '<i class="fa-solid fa-exclamation-circle"></i> {{ error }}';
+        {% endif %}
     </script>
 
 </body>

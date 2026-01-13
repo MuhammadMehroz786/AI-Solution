@@ -464,7 +464,7 @@
 
         <!-- FOOTER / LOGOUT -->
         <footer class="footer-section">
-            <a href="login.html" class="logout-link">
+            <a href="/logout" class="logout-link">
                 <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
             </a>
         </footer>
@@ -597,16 +597,15 @@
                     const items = [];
                     for (const line of dataLines) {
                         const fields = line.split(',').map(f => f.trim().replace(/^"|"$/g, ''));
-                        if (fields.length >= 6) {
-                            items.push({
-                                Company_Name: fields[0],
-                                First_Name: fields[1],
-                                Last_Name: fields[2],
-                                Title: fields[3],
-                                Email: fields[4],
-                                Website: fields[5]
-                            });
-                        }
+                        // Accept rows with any number of fields, use empty string for missing values
+                        items.push({
+                            Company_Name: fields[0] || '',
+                            First_Name: fields[1] || '',
+                            Last_Name: fields[2] || '',
+                            Title: fields[3] || '',
+                            Email: fields[4] || '',
+                            Website: fields[5] || ''
+                        });
                     }
 
                     bulkStatusDiv.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Preparing your intelligence reports...`;
@@ -633,30 +632,18 @@
 
                         const result = await response.json();
 
-                        if (result.success && result.data) {
-                            // N8N returned all document URLs
-                            const processedItems = result.data.items || [];
-
-                            const results = processedItems.map(item => ({
-                                ...item,
-                                document1_url: item.document1_url || 'N/A',
-                                document2_url: item.document2_url || 'N/A',
-                                status: item.error ? 'failed' : 'completed'
-                            }));
-
-                            const successCount = results.filter(r => r.status === 'completed').length;
-                            const failCount = results.filter(r => r.status === 'failed').length;
-
-                            bulkStatusDiv.innerHTML = `<i class="fa-solid fa-check-circle"></i> ✅ Reports Generated Successfully!<br>
-                                <small>Total: ${items.length} prospects analyzed</small><br>
-                                <small>Success: ${successCount} | Failed: ${failCount}</small><br>
-                                <small>All intelligence reports are ready!</small>`;
+                        if (result.success) {
+                            // Batch submitted successfully - results will be emailed
+                            bulkStatusDiv.innerHTML = `<i class="fa-solid fa-check-circle"></i> ✅ Batch Submitted Successfully!<br>
+                                <small>Total: ${result.total_items || items.length} prospects submitted for processing</small><br>
+                                <small>Batch ID: ${result.batch_id}</small><br>
+                                <small>You will receive an email with all results when processing is complete.</small>`;
                             bulkStatusDiv.className = 'status-msg success';
 
-                            // Store results for display
-                            window.batchResults = results;
+                            // Log batch info for debugging
+                            console.log('Batch submitted:', result);
                         } else {
-                            bulkStatusDiv.innerHTML = `<i class="fa-solid fa-exclamation-circle"></i> ❌ Report Generation Failed!<br>
+                            bulkStatusDiv.innerHTML = `<i class="fa-solid fa-exclamation-circle"></i> ❌ Batch Submission Failed!<br>
                                 <small>${result.error || 'Unknown error'}</small>`;
                             bulkStatusDiv.className = 'status-msg error';
                         }
@@ -665,9 +652,6 @@
                             <small>${error.message}</small>`;
                         bulkStatusDiv.className = 'status-msg error';
                     }
-
-                    // Log results for debugging
-                    console.log('Batch Results:', results);
 
                     // Reset UI
                     state.bulk.file = null;
