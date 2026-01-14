@@ -271,6 +271,42 @@
             color: var(--primary);
         }
 
+        /* --- Download Template Button with Glow/Flash Animation --- */
+        .btn-download-template {
+            background: var(--primary-gradient);
+            border: none;
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+            animation: glowPulse 2s ease-in-out infinite;
+            transition: all 0.3s ease;
+        }
+
+        .btn-download-template:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.6);
+            animation: none;
+        }
+
+        @keyframes glowPulse {
+            0%, 100% {
+                box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+                transform: scale(1);
+            }
+            50% {
+                box-shadow: 0 4px 30px rgba(37, 99, 235, 0.8), 0 0 20px rgba(37, 99, 235, 0.6);
+                transform: scale(1.05);
+            }
+        }
+
         /* --- File Upload Area --- */
         .drop-zone {
             border: 2px dashed var(--border);
@@ -449,8 +485,9 @@
                     </div>
 
                     <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <button type="button" class="btn-text" onclick="downloadTemplate()"><i
-                                class="fa-solid fa-download"></i> Template</button>
+                        <button type="button" class="btn-download-template" onclick="downloadTemplate()">
+                            <i class="fa-solid fa-download"></i> Download Template
+                        </button>
                         <button type="button" class="btn-primary" id="bulk-submit"
                             style="width: auto; padding: 0.6rem 1.5rem;" disabled>
                             Process Batch
